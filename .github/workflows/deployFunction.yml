@@ -25,15 +25,12 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    # - name: 'Build and Package'
-    #   shell: pwsh
-      # run: |
-      #   publishfolder="${{ github.workspace }}/output"
-      #   mkdir $publishfolder
-      #   cd $publishfolder
-      #   dotnet publish ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }} --configuration Release --output .
-      #   mkdir ${{ env.BUILD_OUTPUT_PATH }}
-      #   zip -r ${{ env.BUILD_OUTPUT_PATH }}/${{ env.BUILD_PACKAGE_NAME }} .
+    - name: 'Resolve Project Dependencies Using Dotnet'
+      shell: pwsh
+      run: |
+        pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+        dotnet build --configuration Release --output ./output
+        popd
 
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v2
