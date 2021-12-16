@@ -5,7 +5,6 @@ on:
     branches:
       - main
 
-
 env:
   DOTNET_VERSION: '3.1.x'
   AZURE_RESOURCE_GROUP_NAME: 'rg-3dexPoc-d-australiaeast-002'
