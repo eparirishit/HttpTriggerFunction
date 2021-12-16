@@ -5,6 +5,8 @@ on:
     branches:
       - main
 
+  workflow_dispatch:
+
 env:
   DOTNET_VERSION: '3.1.x'
   AZURE_RESOURCE_GROUP_NAME: 'rg-3dexPoc-d-australiaeast-002'
@@ -25,12 +27,15 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: 'Resolve Project Dependencies Using Dotnet'
-      shell: pwsh
+    - name: 'Build and Package'
+      shell: bash
       run: |
-        pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
-        dotnet build --configuration Release --output ./output
-        popd
+        publishfolder="${{ github.workspace }}/output"
+        mkdir $publishfolder
+        cd $publishfolder
+        dotnet publish ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }} --configuration Release --output .
+        mkdir ${{ env.BUILD_OUTPUT_PATH }}
+        zip -r ${{ env.BUILD_OUTPUT_PATH }}/${{ env.BUILD_PACKAGE_NAME }} .
 
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v2
