@@ -43,3 +43,25 @@ jobs:
         name: build_artifacts
         path: ${{ env.BUILD_OUTPUT_PATH }}
         if-no-files-found: error
+
+  deploy-az-infrastructure:
+      needs: [build-and-package]
+      runs-on: ubuntu-latest
+      steps:
+       - name: 'Login to Azure'
+         uses: azure/login@v1
+         with:
+           creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+       - name: 'Checkout Source Code'
+         uses: actions/checkout@v2
+ 
+       - name: 'Create Azure Function App'
+         uses: azure/CLI@v1
+         with:
+           inlineScript: |
+             az deployment group create \
+             --name az-func-workflow-deploy \
+             --resource-group ${{ env.AZURE_RESOURCE_GROUP_NAME }} \
+             --template-file ${{ github.workspace }}/main.bicep \
+             --mode incremental \
