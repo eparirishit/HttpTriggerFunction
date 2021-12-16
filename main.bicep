@@ -1,8 +1,8 @@
-param function_name string = 'azexp-httptrigger'
+param suffixName string = 'azexp-httptrigger'
 param location string = resourceGroup().location
 
 resource storage_account 'Microsoft.Storage/storageAccounts@2021-04-01' = {
-  name: '${function_name}stg'
+  name: 'strgazexphttptrigger'
   location: location
   kind: 'StorageV2'
   sku: {
@@ -16,7 +16,7 @@ resource storage_account 'Microsoft.Storage/storageAccounts@2021-04-01' = {
 }
 
 resource app_insights 'Microsoft.Insights/components@2020-02-02' = {
-  name: 'appi-${function_name}'
+  name: 'appi-${suffixName}'
   location: location
   kind: 'web'
   properties: {
@@ -25,7 +25,7 @@ resource app_insights 'Microsoft.Insights/components@2020-02-02' = {
 }
 
 resource appservice_plan 'Microsoft.Web/serverfarms@2021-02-01' = {
-  name: 'asp-${function_name}'
+  name: 'asp-${suffixName}'
   location: location
   sku: {
     name: 'Y1'
@@ -34,14 +34,9 @@ resource appservice_plan 'Microsoft.Web/serverfarms@2021-02-01' = {
 }
 
 resource function_app 'Microsoft.Web/sites@2021-02-01' = {
-  name: 'func-${function_name}'
+  name: 'func-${suffixName}'
   location: location
   kind: 'functionapp'
-  dependsOn: [
-    storage_account
-    appservice_plan
-    app_insights
-  ]
   properties: {
     httpsOnly: true
     serverFarmId: appservice_plan.id
@@ -61,7 +56,7 @@ resource function_app 'Microsoft.Web/sites@2021-02-01' = {
         }
         {
           name: 'FUNCTIONS_WORKER_RUNTIME'
-          value: 'powershell'
+          value: 'dotnet'
         }
         {
           name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
@@ -69,16 +64,8 @@ resource function_app 'Microsoft.Web/sites@2021-02-01' = {
         }
         {
           name: 'WEBSITE_CONTENTSHARE'
-          value: '${substring(uniqueString(resourceGroup().id), 3)}-azeus-functionapp-dev01'
+          value: '${substring(uniqueString(resourceGroup().id), 3)}-functionapp-dev01'
         }
-        // {
-        //   name: 'WEBSITE_NODE_DEFAULT_VERSION'
-        //   value: '~14'
-        // }
-        // {
-        //   name: 'WEBSITE_RUN_FROM_PACKAGE'
-        //   value: 'https://github.com/rishit-epari/HttpTriggerFunction/releases/download/v1.0.0/httpTrigger.zip'
-        // }
       ]
     }
   }

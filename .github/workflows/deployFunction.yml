@@ -9,11 +9,11 @@ on:
 
 env:
   DOTNET_VERSION: '3.1.x'
-  AZURE_RESOURCE_GROUP_NAME: 'rg-3dexPoc-d-australiaeast-002'
-  AZURE_FUNCTIONAPP_NAME: 'func-sharpbomposter-d-australiaeast-002'
+  AZURE_RESOURCE_GROUP_NAME: 'azure-experiments'
+  AZURE_FUNCTIONAPP_NAME: 'func-httptrigger-d-centralindia-001'
   AZURE_FUNCTIONAPP_PACKAGE_PATH: '${{ github.workspace }}'
   BUILD_OUTPUT_PATH: '${{ github.workspace }}/build-artifacts'
-  BUILD_PACKAGE_NAME: 'func-sharpbomposter.zip'
+  BUILD_PACKAGE_NAME: 'func-httptrigger.zip'
 
 jobs:
   build-and-package:
