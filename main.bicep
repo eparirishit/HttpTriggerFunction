@@ -61,16 +61,24 @@ resource function_app 'Microsoft.Web/sites@2021-02-01' = {
         }
         {
           name: 'FUNCTIONS_WORKER_RUNTIME'
-          value: 'node'
+          value: 'powershell'
         }
         {
-          name: 'WEBSITE_NODE_DEFAULT_VERSION'
-          value: '~14'
+          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storage_account.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storage_account.id, storage_account.apiVersion).keys[0].value}'
         }
         {
-          name: 'WEBSITE_RUN_FROM_PACKAGE'
-          value: 'https://github.com/rishit-epari/HttpTriggerFunction/releases/download/v1.0.0/httpTrigger.zip'
+          name: 'WEBSITE_CONTENTSHARE'
+          value: '${substring(uniqueString(resourceGroup().id), 3)}-azeus-functionapp-dev01'
         }
+        // {
+        //   name: 'WEBSITE_NODE_DEFAULT_VERSION'
+        //   value: '~14'
+        // }
+        // {
+        //   name: 'WEBSITE_RUN_FROM_PACKAGE'
+        //   value: 'https://github.com/rishit-epari/HttpTriggerFunction/releases/download/v1.0.0/httpTrigger.zip'
+        // }
       ]
     }
   }
