@@ -1,35 +1,49 @@
-name: Deploy HttpTrigger function with a Windows environment
+name: function-deploy
 
 on:
-  [push]
+  push:
+    branches:
+      - main
+
 
 env:
-  AZURE_FUNCTIONAPP_NAME: azexp-httptrigger
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.'
-  DOTNET_VERSION: '3.1'
+  DOTNET_VERSION: '3.1.x'
+  AZURE_RESOURCE_GROUP_NAME: 'rg-3dexPoc-d-australiaeast-002'
+  AZURE_FUNCTIONAPP_NAME: 'func-sharpbomposter-d-australiaeast-002'
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: '${{ github.workspace }}'
+  BUILD_OUTPUT_PATH: '${{ github.workspace }}/build-artifacts'
+  BUILD_PACKAGE_NAME: 'func-sharpbomposter.zip'
 
 jobs:
-  build-and-deploy:
-    runs-on: windows-latest
+  build-and-package:
+    runs-on: ubuntu-latest
     steps:
-    - name: 'Checkout GitHub Action'
+    - name: 'Checkout Source Code'
       uses: actions/checkout@v2
 
-    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+    - name: 'Setup .NET Environment'
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: 'Resolve Project Dependencies Using Dotnet'
-      shell: pwsh
-      run: |
-        pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
-        dotnet build --configuration Release --output ./output
-        popd
-    - name: 'Run Azure Functions Action'
-      uses: Azure/functions-action@v1
-      id: fa
+    - name: 'Build and Package'
+      shell: bash
+        run: |
+          publishfolder="${{ github.workspace }}/output"
+          mkdir $publishfolder
+          cd $publishfolder
+          dotnet publish ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }} --configuration Release --output .
+          mkdir ${{ env.BUILD_OUTPUT_PATH }}
+          zip -r ${{ env.BUILD_OUTPUT_PATH }}/${{ env.BUILD_PACKAGE_NAME }} .
+
+    - name: 'Upload Artifact'
+      uses: actions/upload-artifact@v2
       with:
-        app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-        package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
-        publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+        name: build_artifacts
+        path: ${{ env.BUILD_OUTPUT_PATH }}
+        if-no-files-found: error
+  
+  # package:
+
+
+  # deploy:
