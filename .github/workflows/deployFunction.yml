@@ -62,5 +62,5 @@ jobs:
            inlineScript: |
              az deployment group create \
              --resource-group ${{ env.AZURE_RESOURCE_GROUP_NAME }} \
-             --template-file ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/main.bicep \
+             --template-file ./main.bicep \
              --mode incremental \
