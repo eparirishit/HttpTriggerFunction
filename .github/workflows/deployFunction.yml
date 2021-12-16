@@ -61,7 +61,6 @@ jobs:
          with:
            inlineScript: |
              az deployment group create \
-             --name az-func-workflow-deploy \
              --resource-group ${{ env.AZURE_RESOURCE_GROUP_NAME }} \
-             --template-file ${{ github.workspace }}/main.bicep \
+             --template-file ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/main.bicep \
              --mode incremental \
